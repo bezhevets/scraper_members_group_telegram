@@ -10,3 +10,4 @@ venv/
 *.pyc
 .flake8
 pyproject.toml
+anon.session
