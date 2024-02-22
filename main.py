@@ -1,6 +1,7 @@
 import os
 from dataclasses import dataclass, fields
 from pprint import pprint
+from typing import List
 
 from telethon import TelegramClient
 from telethon.tl.functions.messages import GetDialogsRequest
@@ -30,7 +31,7 @@ class User:
         return [field.name for field in fields(User)]
 
 
-async def main():
+async def get_all_chat() -> list:
     chats = []
 
     result = await client(
@@ -44,7 +45,10 @@ async def main():
     )
 
     chats.extend(result.chats)
+    return chats
 
+
+async def choice_of_chat(chats: list):
     for i, chat in enumerate(chats):
         print(f"Index group: {i}; Name group: {chat.title}")
     print("*" * 100 + "\nChoose a group")
@@ -53,7 +57,10 @@ async def main():
     all_participants = await client.get_participants(
         chats[int(group_numb)], aggressive=True
     )
+    return all_participants
 
+
+async def get_all_members_group(all_participants) -> List[User]:
     print("*" * 100 + "\nSTART")
 
     users_list = []
@@ -67,8 +74,16 @@ async def main():
                 phone=user.phone if user.phone else None,
             )
         )
+    return users_list
 
-    pprint(users_list)
+
+async def main() -> None:
+    chats = await get_all_chat()
+
+    all_participants = await choice_of_chat(chats)
+
+    list_users = await get_all_members_group(all_participants)
+    pprint(list_users)
 
 
 with client:
